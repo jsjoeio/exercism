@@ -25,6 +25,10 @@ describe('Converter', () => {
     expect(convert([1, 1, 2, 0], 3, 16)).toEqual([2, 10])
   })
 
+  test('binary to base 5', () => {
+    expect(convert([1, 0, 1, 1], 2, 5)).toEqual([2, 1])
+  })
+
   xtest('hexadecimal to trinary', () => {
     expect(convert([2, 10], 16, 3)).toEqual([1, 1, 2, 0])
   })
