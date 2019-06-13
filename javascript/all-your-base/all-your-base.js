@@ -1,9 +1,43 @@
+function calculateInteger (digits, base) {
+  const length = digits.length
+  let sum = 0
+  let power = length - 1
+  for (let i = 0; i < length; i++) {
+    sum += (Math.pow(base, power) * digits[i])
+    power -= 1
+  }
+  return sum
+}
 
-// first argument is our number
-// second is the current base (2, 10, 16, etc.)
+function calculateMaxPower (integer, base) {
+  let copiedInt = integer
+  let maxPower = 0
 
-// What base it's in
-// second is the base you convert it to.
+  for (let i = 0; copiedInt >= Math.pow(base, i); i++) {
+    maxPower = i
+  }
+  return maxPower
+}
+
+function calculateDigits (integer, base, maxPower, digits) {
+  if (maxPower === 0) {
+    return [...digits, integer]
+  }
+  // Clone maxPower
+  let copiedMaxPower = maxPower
+  // Calculate digit
+  const digit = Math.floor(integer / Math.pow(base, maxPower))
+  // Get remainder
+  const remainder = integer - (Math.pow(base, maxPower) * digit)
+  // Store in copiedDigits
+  const copiedDigits = [...digits, digit]
+  copiedMaxPower -= 1
+
+  if (copiedMaxPower >= 0) {
+    return calculateDigits(remainder, base, copiedMaxPower, copiedDigits)
+  }
+  return copiedDigits
+}
 
 /**
  *
@@ -27,46 +61,22 @@ export function convert (n, inputBase, outputBase) {
     throw Error('Input has wrong format')
   }
 
-  /*
-    TODO
-    2. figure out how to solve it.
-  */
-  const output = []
-  const length = n.length
-  // Start with a loop and count backwards
-  for (let i = length - 1; i >= 0; i--) {
-    // const result = Math.pow(inputBase, i) - Math.pow(outputBase, 1)
+  // Check for 0 at start
+  if (n.length > 1 && n[0] === 0) {
+    throw Error('Input has wrong format')
   }
+
+  // Check for negative numbers
+  if (n.some(int => Math.sign(int) === -1)) {
+    throw Error('Input has wrong format')
+  }
+
+  // Check n is valid with inputBase
+  if (n.some(int => int >= inputBase)) {
+    throw Error('Input has wrong format')
+  }
+
+  const integer = calculateInteger(n, inputBase)
+  const maxPower = calculateMaxPower(integer, outputBase)
+  return calculateDigits(integer, outputBase, maxPower, [])
 }
-
-function getMaxPower (integer, base) {
-  let copiedInt = integer
-  let maxPower = 0
-
-  for (let i = 0; copiedInt >= Math.pow(base, i); i++) {
-    maxPower = i
-  }
-  return maxPower
-}
-
-function calculateDigits (integer, base, maxPower, digits) {
-  if (maxPower === 0) {
-    return [...digits, integer]
-  }
-  // Clone maxPower
-  let copiedMaxPower = maxPower
-  // Calculate digit
-  const digit = Math.floor(integer / Math.pow(base, maxPower))
-  // Get remainder
-  const remainder = integer % base
-  // Store in copiedDigits
-  const copiedDigits = [...digits, digit]
-  copiedMaxPower -= 1
-
-  if (copiedMaxPower >= 0) {
-    return calculateDigits(remainder, base, copiedMaxPower, copiedDigits)
-  }
-  return copiedDigits
-}
-
-// Next step, testing calculate digits with a number bigger than 16.
